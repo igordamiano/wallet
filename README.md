@@ -29,7 +29,7 @@ The application will start on: `http://localhost:8080`
 ### Swagger UI
 
 ```text
-http://localhost:8080/swagger-ui.html
+http://localhost:8080/swagger-ui/index.html
 ```
 
 ## ✅ Features

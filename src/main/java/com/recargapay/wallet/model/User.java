@@ -1,9 +1,6 @@
 package com.recargapay.wallet.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +10,7 @@ import org.springframework.data.annotation.Version;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "Users")
+@Table(name = "USERS")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,7 +18,7 @@ import java.math.BigDecimal;
 public class User {
 
     @Id
-    @Column(columnDefinition = "varchar(36)")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;

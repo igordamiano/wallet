@@ -1,6 +1,9 @@
 spring:
   application:
     name: wallet
+  sql:
+    init:
+      data-locations: classpath:sql/data.sql
   datasource:
     url: jdbc:h2:mem:walletdb;DB_CLOSE_DELAY=-1
     driver-class-name: org.h2.Driver
@@ -14,11 +17,12 @@ spring:
         web-allow-others: true
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     show-sql: true
     properties:
       hibernate:
       format_sql: true
+    defer-datasource-initialization: true
 wallet:
   jwt:
     secret: igordamiano-wallet-service-assignment
