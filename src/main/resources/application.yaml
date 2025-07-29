@@ -19,10 +19,9 @@ spring:
     properties:
       hibernate:
       format_sql: true
-rpTest:
+wallet:
   jwt:
     secret: igordamiano-wallet-service-assignment
-    #secret: pepe-ja-tirei-a-vela
     expiration: 60480000 # in seconds
 
 # Swagger docs at /swagger-ui.html or /swagger-ui/index.html

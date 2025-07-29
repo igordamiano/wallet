@@ -13,10 +13,10 @@ import java.util.Date;
 @Log4j2
 public class JwtUtil {
 
-    @Value("${rpTest.jwt.secret}")
+    @Value("${wallet.jwt.secret}")
     private String jwtSecret;
 
-    @Value("${rpTest.jwt.expiration}")
+    @Value("${wallet.jwt.expiration}")
     private long jwtExpirationMs;
 
     public String generateToken(String username) {
