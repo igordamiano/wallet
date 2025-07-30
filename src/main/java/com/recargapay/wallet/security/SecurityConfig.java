@@ -16,6 +16,13 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    private static final String[] PUBLIC_ENDPOINTS = {
+            "/auth/**", "/wallet/user", "/swagger-ui/**",
+            "/v3/api-docs/**", "/swagger-resources/**",
+            "/webjars/**", "/h2-console/**"
+    };
+
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -24,13 +31,7 @@ public class SecurityConfig {
             .sessionManagement(session -> session
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/auth/**",
-                    "/wallet/user",
-                    "/swagger-ui/**",
-                    "/v3/api-docs/**",
-                    "/swagger-resources/**",
-                    "/webjars/**",
-                    "/h2-console/**").permitAll()
+            .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
             .anyRequest().authenticated()
             );
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

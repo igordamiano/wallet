@@ -1,6 +1,8 @@
+
 spring:
-  application:
-    name: wallet
+  config:
+    activate:
+      on-profile: dev
 
   datasource:
     url: jdbc:h2:mem:walletdb;DB_CLOSE_DELAY=-1
@@ -17,7 +19,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
@@ -26,5 +28,5 @@ spring:
 
 wallet:
   jwt:
-    secret: super-secret-key-must-be-32-chars!
-    expiration: 3600 # in seconds
+    secret: dev-secret-key-should-be-32-chars-long!
+    expiration: 7200

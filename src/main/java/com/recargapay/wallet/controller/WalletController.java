@@ -8,6 +8,7 @@ import com.recargapay.wallet.service.WalletService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -54,6 +55,7 @@ public class WalletController {
             @ApiResponse(responseCode = "403", description = "Forbidden – access denied"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/user/{id}")
     public UserDTO getUser(@PathVariable Long id) {
         return walletService.getUser(id);
@@ -71,6 +73,7 @@ public class WalletController {
             @ApiResponse(responseCode = "403", description = "Forbidden – access denied"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/deposit")
     public UserDTO deposit(@RequestBody WalletOperationDTO operation) {
         return walletService.deposit(operation);
@@ -88,6 +91,7 @@ public class WalletController {
             @ApiResponse(responseCode = "403", description = "Forbidden – access denied"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/withdraw")
     public UserDTO withdraw(@RequestBody WalletOperationDTO operation) {
         return walletService.withdraw(operation);
@@ -106,6 +110,7 @@ public class WalletController {
             @ApiResponse(responseCode = "404", description = "Sender or recipient user not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/transfer")
     public String transfer(@RequestBody WalletOperTransferDTO transfer) {
         walletService.transfer(transfer);
@@ -122,6 +127,7 @@ public class WalletController {
             @ApiResponse(responseCode = "404", description = "User not found"),
             @ApiResponse(responseCode = "400", description = "Invalid timestamp format")
     })
+    @SecurityRequirement(name = "bearerAuth")
     public HistoricalBalanceDTO getHistoricalBalance(
             @PathVariable Long id,
             @RequestParam("at") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime at) {

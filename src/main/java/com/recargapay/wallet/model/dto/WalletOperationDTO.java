@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class WalletOperationDTO {
 
-    // Unique key for idempotency
     private String operationId;
 
     private BigDecimal amount;

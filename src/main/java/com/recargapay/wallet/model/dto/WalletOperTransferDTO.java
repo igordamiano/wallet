@@ -11,14 +11,12 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class WalletOperTransferDTO {
 
-    // Unique key for idempotency
     private String operationId;
 
     private BigDecimal amount;
 
     private Long senderUserId;
 
-    // For transfers
     private Long receiverUserId;
 
 }

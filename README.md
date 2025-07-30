@@ -41,6 +41,28 @@ http://localhost:8080/swagger-ui/index.html
 - Retrieve user by ID
 - Check current wallet balance
 - Check historical wallet balance
+- Authenticate and generate JWT token
+- Protect endpoints with JWT
+- Return traceId in error responses and logs
+
+## 🔐 Authentication
+
+The API uses **JWT tokens** to authenticate users. First, create a user and then call `/auth/login?username={name}` to receive a token. Use this token in the `Authorization` header for protected endpoints:
+
+```
+Authorization: Bearer <token>
+```
+
+Endpoints that require authentication include:
+- `/user/{id}`
+- `/user/{id}/balance`
+- `/deposit`
+- `/withdraw`
+- `/transfer`
+
+### Swagger and JWT
+
+Swagger UI includes a lock icon (🔐) for secured endpoints. Click it and paste your JWT token (e.g. `Bearer eyJhbGciOiJIUzI1NiIs...`) to authorize your session and test secured endpoints directly from the browser.
 
 ## 🧱 Technologies
 
@@ -48,8 +70,10 @@ http://localhost:8080/swagger-ui/index.html
 - Spring Boot 3.x
 - Spring Web
 - Spring Validation
+- Spring Security + JWT
 - SpringDoc OpenAPI (Swagger)
-- In-memory data structures (for simplicity)
+- Logback + MDC
+- H2 Database (in-memory)
 
 ## 🧠 Design Decisions
 
@@ -59,25 +83,46 @@ http://localhost:8080/swagger-ui/index.html
 - **Validation**: Request bodies are validated using `@Valid` and Java Bean Validation annotations.
 - **Exception Handling**: A global `@ControllerAdvice` captures and formats known exceptions into standardized responses.
 - **Logging**: Errors and important events are logged with useful context for traceability.
-- **Swagger**: API is documented using OpenAPI 3 with proper tags, summaries and response codes.
+- **Trace ID**: Each request generates a unique traceId injected into the logs and returned in error responses.
+- **JWT Authentication**: Stateless token-based auth with expiration and filter-based verification.
+- **Swagger**: API is documented using OpenAPI 3 with proper tags, summaries, and response codes.
 
-## 📝 Assumptions
+## 📎 Trace ID
 
-- For simplicity, all data is stored in memory. In a real production scenario, a relational database would be used with transactional guarantees.
-- Wallet operations assume that the user must already exist.
-- Authentication is mocked or omitted for this challenge scope.
+Each HTTP request generates a `traceId` that:
+- Is logged in every log entry for that request
+- Is returned in the response header `X-Trace-Id`
+- Is included in the error body (`ApiErrorDTO`) to assist with debugging and correlation
+
+Example log:
+```
+2025-07-30 14:20:04.817 [8b72ca07-4611-4116-b690-5d4563c1cc23] INFO  WalletService - TESTE DE TRACE
+```
+
+Example error response:
+```json
+{
+  "error": "User not found",
+  "path": "/user/999",
+  "timestamp": "2025-07-30T14:22:18",
+  "traceId": "8b72ca07-4611-4116-b690-5d4563c1cc23"
+}
+```
 
 ## 🧪 How to Test
 
-You can test the endpoints using Swagger UI or via curl/Postman. Example curl:
+You can test the endpoints using Swagger UI or Postman.
 
 ```bash
-curl -X POST http://localhost:8080/deposit   -H "Content-Type: application/json"   -d '{ "userId": 1, "amount": 100.0 }'
+curl -X POST http://localhost:8080/deposit \
+  -H "Authorization: Bearer <your-jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{ "userId": 1, "amount": 100.0, "operationId": "op-123" }'
 ```
 
 ## ⏱ Time Spent
 
-Estimated total time spent: ~6–8 hours
+Estimated total time spent: ~10–12 hours
 
 ---
 

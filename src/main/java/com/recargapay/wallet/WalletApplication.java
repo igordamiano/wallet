@@ -8,9 +8,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 @OpenAPIDefinition(
         info = @Info(
-                title = "RecargaPay Wallet API",
+                title = "Digital Wallet API – RecargaPay Technical Challenge",
                 version = "0.0.1",
-                description = "API for managing wallet operations for testing in RecargaPay"
+                description = "API for digital wallet operations built for the RecargaPay backend challenge"
+
         ))
 public class WalletApplication {
 

@@ -19,21 +19,19 @@ public class WalletOperation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
-    protected Long id;
+    private Long id;
 
-    // Unique key for idempotency
     @Column(unique = true, nullable = false)
-    protected String operationId;
+    private String operationId;
 
-    protected Long userId;
+    private Long userId;
 
-    protected BigDecimal amount;
+    private BigDecimal amount;
 
-    // deposit, withdraw, transfer
-    protected String type;
+    private String type;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
-    protected LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
 }

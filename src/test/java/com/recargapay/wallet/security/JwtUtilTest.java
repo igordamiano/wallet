@@ -5,20 +5,23 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class JwtUtilTest {
+public class JwtUtilTest {
 
-   @Test
+    @Test
     void testGenerateAndValidateToken() {
         JwtUtil jwtUtil = new JwtUtil();
-        ReflectionTestUtils.setField(jwtUtil, "jwtSecret", "segredo-teste");
 
-        String token = jwtUtil.generateToken("usuario");
+        // secret must be at least 32 chars for HMAC SHA
+        String secret = "super-secret-key-must-be-32-chars!";
+        ReflectionTestUtils.setField(jwtUtil, "jwtSecret", secret);
+        ReflectionTestUtils.setField(jwtUtil, "jwtExpirationSeconds", 300L);
+
+        String token = jwtUtil.generateToken("user");
         assertNotNull(token);
 
         String username = jwtUtil.getUsernameFromToken(token);
-        assertEquals("usuario", username);
+        assertEquals("user", username);
 
         assertTrue(jwtUtil.validateToken(token));
     }
-
 }

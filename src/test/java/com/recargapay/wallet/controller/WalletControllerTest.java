@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -105,4 +106,14 @@ class WalletControllerTest {
         HistoricalBalanceDTO result = walletController.getHistoricalBalance(userId, timestamp);
         assertEquals(expected, result);
     }
+
+    @Test
+    void getUser_shouldThrow_whenUserNotFound() {
+        when(walletService.getUser(1L)).thenThrow(new IllegalArgumentException("User not found"));
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> walletController.getUser(1L));
+        assertEquals("User not found", ex.getMessage());
+    }
+
 }
