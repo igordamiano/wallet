@@ -96,7 +96,7 @@ Each HTTP request generates a `traceId` that:
 
 Example log:
 ```
-2025-07-30 14:20:04.817 [8b72ca07-4611-4116-b690-5d4563c1cc23] INFO  WalletService - TESTE DE TRACE
+2025-07-30 14:20:04.817 [8b72ca07-4611-4116-b690-5d4563c1cc23] INFO  WalletService - TRACE TEST
 ```
 
 Example error response:
@@ -119,10 +119,6 @@ curl -X POST http://localhost:8080/deposit \
   -H "Content-Type: application/json" \
   -d '{ "userId": 1, "amount": 100.0, "operationId": "op-123" }'
 ```
-
-## ⏱ Time Spent
-
-Estimated total time spent: ~10–12 hours
 
 ---
 
