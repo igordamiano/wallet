@@ -1,6 +1,7 @@
 package com.recargapay.wallet.controller;
 
-import com.recargapay.wallet.model.dto.UserDto;
+import com.recargapay.wallet.model.dto.HistoricalBalanceDTO;
+import com.recargapay.wallet.model.dto.UserDTO;
 import com.recargapay.wallet.model.dto.WalletOperTransferDTO;
 import com.recargapay.wallet.model.dto.WalletOperationDTO;
 import com.recargapay.wallet.service.WalletService;
@@ -9,7 +10,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,7 +38,7 @@ public class WalletController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PostMapping("/user")
-    public UserDto createUser(@RequestBody UserDto dto) {
+    public UserDTO createUser(@RequestBody UserDTO dto) {
         return walletService.createUser(dto.getId(), dto.getName(), dto.getBalance());
     }
 
@@ -51,7 +55,7 @@ public class WalletController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("/user/{id}")
-    public UserDto getUser(@PathVariable Long id) {
+    public UserDTO getUser(@PathVariable Long id) {
         return walletService.getUser(id);
     }
 
@@ -68,7 +72,7 @@ public class WalletController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PostMapping("/deposit")
-    public UserDto deposit(@RequestBody WalletOperationDTO operation) {
+    public UserDTO deposit(@RequestBody WalletOperationDTO operation) {
         return walletService.deposit(operation);
     }
 
@@ -85,7 +89,7 @@ public class WalletController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PostMapping("/withdraw")
-    public UserDto withdraw(@RequestBody WalletOperationDTO operation) {
+    public UserDTO withdraw(@RequestBody WalletOperationDTO operation) {
         return walletService.withdraw(operation);
     }
 
@@ -106,5 +110,21 @@ public class WalletController {
     public String transfer(@RequestBody WalletOperTransferDTO transfer) {
         walletService.transfer(transfer);
         return "Transfer successful";
+    }
+
+    @GetMapping("/user/{id}/balance")
+    @Operation(
+            summary = "Get historical wallet balance",
+            description = "Returns the balance of the user's wallet at a specific timestamp"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Historical balance returned"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "400", description = "Invalid timestamp format")
+    })
+    public HistoricalBalanceDTO getHistoricalBalance(
+            @PathVariable Long id,
+            @RequestParam("at") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime at) {
+        return walletService.getHistoricalBalance(id, at);
     }
 }

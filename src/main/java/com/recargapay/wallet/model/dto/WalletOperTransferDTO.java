@@ -1,5 +1,6 @@
 package com.recargapay.wallet.model.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
@@ -7,16 +8,17 @@ import java.math.BigDecimal;
 
 @Data
 @Builder
+@AllArgsConstructor
 public class WalletOperTransferDTO {
 
     // Unique key for idempotency
-    protected String operationId;
+    private String operationId;
 
-    protected BigDecimal amount;
+    private BigDecimal amount;
 
-    protected Long senderUserId;
+    private Long senderUserId;
 
     // For transfers
-    protected Long receiverUserId;
+    private Long receiverUserId;
 
 }

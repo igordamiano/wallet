@@ -1,21 +1,15 @@
 package com.recargapay.wallet.model.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
-@Builder
 @AllArgsConstructor
-public class WalletOperationDTO {
-
-    // Unique key for idempotency
-    private String operationId;
-
-    private BigDecimal amount;
-
+public class HistoricalBalanceDTO {
     private Long userId;
-
+    private BigDecimal balance;
+    private LocalDateTime timestamp;
 }

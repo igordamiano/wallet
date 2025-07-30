@@ -2,7 +2,8 @@ package com.recargapay.wallet.service;
 
 import com.recargapay.wallet.model.User;
 import com.recargapay.wallet.model.WalletOperation;
-import com.recargapay.wallet.model.dto.UserDto;
+import com.recargapay.wallet.model.dto.HistoricalBalanceDTO;
+import com.recargapay.wallet.model.dto.UserDTO;
 import com.recargapay.wallet.model.dto.WalletOperTransferDTO;
 import com.recargapay.wallet.model.dto.WalletOperationDTO;
 import com.recargapay.wallet.model.enums.OperationType;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -29,7 +31,7 @@ public class WalletService {
 
     private final UserMapper userMapper;
 
-    public UserDto createUser(Long id, String name, BigDecimal initialBalance) {
+    public UserDTO createUser(Long id, String name, BigDecimal initialBalance) {
         if (userRepository.existsById(id)) {
             log.error("User with id {} already exists", id);
             throw new IllegalArgumentException("User already exists");
@@ -38,7 +40,7 @@ public class WalletService {
         return userMapper.toUserDto(userRepository.save(user));
     }
 
-    public UserDto getUser(Long id) {
+    public UserDTO getUser(Long id) {
         Optional<User> user = userRepository.findById(id);
         if (user.isEmpty()) {
             log.error("User with id {} not found", id);
@@ -48,7 +50,7 @@ public class WalletService {
     }
 
     @Transactional
-    public UserDto deposit(WalletOperationDTO operation) {
+    public UserDTO deposit(WalletOperationDTO operation) {
         User user = userRepository.findById(operation.getUserId()).orElseThrow();
         try {
             checkDuplicate(operation.getOperationId());
@@ -73,7 +75,7 @@ public class WalletService {
     }
 
     @Transactional
-    public UserDto withdraw(WalletOperationDTO operation) {
+    public UserDTO withdraw(WalletOperationDTO operation) {
         checkDuplicate(operation.getOperationId());
         User user = checkAccountBalance(operation.getUserId(), operation.getAmount());
         try {
@@ -142,6 +144,34 @@ public class WalletService {
     private void logOptimisticLockingFailure(OptimisticLockingFailureException e) {
         log.error("Optimistic locking failure: {}", e.getMessage());
         throw new IllegalStateException("Operation failed due to concurrent modification. Retry the operation.");
+    }
+
+    public HistoricalBalanceDTO getHistoricalBalance(Long userId, LocalDateTime timestamp) {
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new IllegalArgumentException("User not found"));
+
+        // Soma dos depósitos até o timestamp
+        BigDecimal deposits = operationRepository.sumByUserIdAndTypeAndTimestampBefore(
+                userId, OperationType.DEPOSIT.name(), timestamp).orElse(BigDecimal.ZERO);
+
+        // Soma dos saques até o timestamp
+        BigDecimal withdrawals = operationRepository.sumByUserIdAndTypeAndTimestampBefore(
+                userId, OperationType.WITHDRAW.name(), timestamp).orElse(BigDecimal.ZERO);
+
+        // Soma das transferências enviadas até o timestamp
+        BigDecimal sentTransfers = operationRepository.sumByUserIdAndTypeAndTimestampBefore(
+                userId, OperationType.TRANSFER.name() + "_withdraw", timestamp).orElse(BigDecimal.ZERO);
+
+        // Soma das transferências recebidas até o timestamp
+        BigDecimal receivedTransfers = operationRepository.sumByUserIdAndTypeAndTimestampBefore(
+                userId, OperationType.TRANSFER.name() + "_deposit", timestamp).orElse(BigDecimal.ZERO);
+
+        BigDecimal balance = deposits
+                .add(receivedTransfers)
+                .subtract(withdrawals)
+                .subtract(sentTransfers);
+
+        return new HistoricalBalanceDTO(userId, balance, timestamp);
     }
 
 }
