@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Log4j2
@@ -31,13 +32,36 @@ public class WalletService {
 
     private final UserMapper userMapper;
 
-    public UserDTO createUser(Long id, String name, BigDecimal initialBalance) {
-        if (userRepository.existsById(id)) {
-            log.error("User with id {} already exists", id);
+    public UserDTO createUser(String name, BigDecimal initialBalance) {
+        if (userRepository.findByName(name).isPresent()) {
+            log.error("User with name {} already exists", name);
             throw new IllegalArgumentException("User already exists");
         }
-        User user = new User(id, name, initialBalance, 1L);
-        return userMapper.toUserDto(userRepository.save(user));
+
+        User user = new User();
+        user.setName(name);
+        user.setBalance(initialBalance);
+        User savedUser = userRepository.save(user);
+
+        // Se saldo inicial for > 0, salva operação de depósito
+        if (initialBalance != null && initialBalance.compareTo(BigDecimal.ZERO) > 0) {
+            // Atualiza saldo do usuário
+            savedUser.setBalance(initialBalance);
+            userRepository.save(savedUser);
+
+            // Cria operação de depósito
+            WalletOperation depositOperation = WalletOperation.builder()
+                    .operationId(UUID.randomUUID().toString())
+                    .userId(savedUser.getId())
+                    .amount(initialBalance)
+                    .type(OperationType.DEPOSIT.name())
+                    .createdAt(LocalDateTime.now())
+                    .build();
+
+            operationRepository.save(depositOperation);
+        }
+
+        return userMapper.toUserDto(savedUser);
     }
 
     public UserDTO getUser(Long id) {

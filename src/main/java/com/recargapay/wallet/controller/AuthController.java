@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @Log4j2
 @RestController
 @RequestMapping("/auth")
@@ -35,7 +37,7 @@ public class AuthController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PostMapping("/login")
-    public String login(@RequestParam String username) {
+    public Map<String, String> login(@RequestParam String username) {
         User user;
         try {
             user = userRepository.findByName(username).orElseThrow();
@@ -43,7 +45,9 @@ public class AuthController {
             log.error("Error finding user with username '{}'", username, e);
             throw new IllegalArgumentException("User not found: " + username);
         }
-        return jwtUtil.generateToken(user.getName());
+        String token = jwtUtil.generateToken(user.getName());
+        return Map.of("token", token);
+
     }
 
 }

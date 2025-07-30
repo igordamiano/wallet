@@ -54,16 +54,16 @@ class WalletServiceTest {
         when(userRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
         when(userMapper.toUserDto(any())).thenReturn(new UserDTO(id, name, balance));
 
-        UserDTO result = walletService.createUser(id, name, balance);
+        UserDTO result = walletService.createUser(name, balance);
 
         assertEquals(id, result.getId());
     }
 
     @Test
     void createUser_alreadyExists() {
-        when(userRepository.existsById(1L)).thenReturn(true);
+        when(userRepository.findByName("Test")).thenReturn(Optional.of(new User()));
 
-        assertThrows(IllegalArgumentException.class, () -> walletService.createUser(1L, "Test", BigDecimal.TEN));
+        assertThrows(IllegalArgumentException.class, () -> walletService.createUser("Test", BigDecimal.TEN));
     }
 
     @Test

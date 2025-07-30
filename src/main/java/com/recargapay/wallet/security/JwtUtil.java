@@ -17,7 +17,7 @@ public class JwtUtil {
     private String jwtSecret;
 
     @Value("${wallet.jwt.expiration}")
-    private long jwtExpirationMs;
+    private long jwtExpirationSeconds;
 
     public String generateToken(String username) {
         Date now = new Date();
@@ -27,7 +27,6 @@ public class JwtUtil {
                 .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
-                //.setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
@@ -35,7 +34,7 @@ public class JwtUtil {
     public String getUsernameFromToken(String token) {
         return Jwts
                 .parser()
-                .setAllowedClockSkewSeconds(5)
+                .setAllowedClockSkewSeconds(jwtExpirationSeconds)
                 .setSigningKey(jwtSecret)
                 .parseClaimsJws(token)
                 .getBody()

@@ -45,7 +45,7 @@ class WalletControllerTest {
         UserDTO input = UserDTO.builder().id(1L).name("Fulano").balance(BigDecimal.valueOf(100.0)).build();
         UserDTO expected = UserDTO.builder().id(1L).name("Fulano").balance(BigDecimal.valueOf(100.0)).build();
 
-        when(walletService.createUser(any(), any(), any())).thenReturn(expected);
+        when(walletService.createUser(any(), any())).thenReturn(expected);
 
         UserDTO result = walletController.createUser(input);
         assertEquals(expected, result);

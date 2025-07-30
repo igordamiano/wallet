@@ -39,7 +39,7 @@ public class WalletController {
     })
     @PostMapping("/user")
     public UserDTO createUser(@RequestBody UserDTO dto) {
-        return walletService.createUser(dto.getId(), dto.getName(), dto.getBalance());
+        return walletService.createUser(dto.getName(), dto.getBalance());
     }
 
 
